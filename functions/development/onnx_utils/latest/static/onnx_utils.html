@@ -16,6 +16,7 @@
 <link href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" rel="stylesheet" type="text/css">
 <link href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css">
 <link href="../../../_static/togglebutton.css" rel="stylesheet" type="text/css">
+<link href="../../../_static/css/custom.css" rel="stylesheet" type="text/css">
 <!-- Pre-loaded scripts that we'll load fully later -->
 <link as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf" rel="preload"/>
 <script src="../../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
@@ -30,7 +31,7 @@
 <script src="../../../_static/scripts/sphinx-book-theme.js"></script>
 <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
 <link href="../../genindex.html" rel="index" title="Index">
-<link href="../../search.html" rel="search" title="Search">
+<link href="../../search.html" rel="search" title="Search"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="en" name="docsearch:language"/>
 <!-- Google Analytics -->
@@ -64,36 +65,6 @@
 <div class="header-article__left">
 </div>
 <div class="header-article__right">
-<button class="headerbtn" data-placement="bottom" data-toggle="tooltip" onclick="toggleFullScreen()" title="Fullscreen mode">
-<span class="headerbtn__icon-container">
-<i class="fas fa-expand"></i>
-</span>
-</button>
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-<button aria-label="Source repositories" class="headerbtn menu-dropdown__trigger">
-<i class="fab fa-github"></i>
-</button>
-<div class="menu-dropdown__content">
-<ul>
-<li>
-<a class="headerbtn" data-placement="left" data-toggle="tooltip" href="https://github.com/mlrun/marketplace" title="Source repository">
-<span class="headerbtn__icon-container">
-<i class="fab fa-github"></i>
-</span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-</li>
-<li>
-<a class="headerbtn" data-placement="left" data-toggle="tooltip" href="https://github.com/mlrun/marketplace/issues/new?title=Issue%20on%20page%20%2F_modules/onnx_utils/onnx_utils.html&amp;body=Your%20issue%20content%20here." title="Open an issue">
-<span class="headerbtn__icon-container">
-<i class="fas fa-lightbulb"></i>
-</span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-</li>
-</ul>
-</div>
-</div>
 </div>
 </div>
 <!-- Table of contents -->
@@ -262,7 +233,7 @@
             <span class="n">input_layers_names</span><span class="o">=</span><span class="n">input_layers_names</span><span class="p">,</span>
             <span class="n">output_layers_names</span><span class="o">=</span><span class="n">output_layers_names</span><span class="p">,</span>
             <span class="n">dynamic_axes</span><span class="o">=</span><span class="n">dynamic_axes</span><span class="p">,</span>
-            <span class="n">is_batched</span><span class="o">=</span><span class="n">is_batched</span>
+            <span class="n">is_batched</span><span class="o">=</span><span class="n">is_batched</span><span class="p">,</span>
         <span class="p">)</span>
 
 
@@ -276,6 +247,7 @@
 <div class="viewcode-block" id="to_onnx"><a class="viewcode-back" href="documentation.html#onnx_utils.onnx_utils.to_onnx">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">to_onnx</span><span class="p">(</span>
     <span class="n">context</span><span class="p">:</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">MLClientCtx</span><span class="p">,</span>
     <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">load_model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">onnx_model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">optimize_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">framework_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -283,19 +255,23 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert the given model to an ONNX model.</span>
 
-<span class="sd">    :param context:          The MLRun function execution context</span>
-<span class="sd">    :param model_path:       The model path store object.</span>
-<span class="sd">    :param onnx_model_name:  The name to use to log the converted ONNX model. If not given, the given `model_name` will</span>
-<span class="sd">                             be used with an additional suffix `_onnx`. Defaulted to None.</span>
-<span class="sd">    :param optimize_model:   Whether to optimize the ONNX model using 'onnxoptimizer' before saving the model. Defaulted</span>
-<span class="sd">                             to True.</span>
-<span class="sd">    :param framework_kwargs: Additional arguments each framework may require in order to convert to ONNX. To get the doc</span>
-<span class="sd">                             string of the desired framework onnx conversion function, pass "help".</span>
+<span class="sd">    :param context:           The MLRun function execution context</span>
+<span class="sd">    :param model_path:        The model path store object.</span>
+<span class="sd">    :param load_model_kwargs: Keyword arguments to pass to the `AutoMLRun.load_model` method.</span>
+<span class="sd">    :param onnx_model_name:   The name to use to log the converted ONNX model. If not given, the given `model_name` will</span>
+<span class="sd">                              be used with an additional suffix `_onnx`. Defaulted to None.</span>
+<span class="sd">    :param optimize_model:    Whether to optimize the ONNX model using 'onnxoptimizer' before saving the model.</span>
+<span class="sd">                              Defaulted to True.</span>
+<span class="sd">    :param framework_kwargs:  Additional arguments each framework may require to convert to ONNX. To get the doc string</span>
+<span class="sd">                              of the desired framework onnx conversion function, pass "help".</span>
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mlrun.frameworks.auto_mlrun.auto_mlrun</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoMLRun</span>
 
     <span class="c1"># Get a model handler of the required framework:</span>
-    <span class="n">model_handler</span> <span class="o">=</span> <span class="n">AutoMLRun</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">load_model_kwargs</span> <span class="o">=</span> <span class="n">load_model_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">model_handler</span> <span class="o">=</span> <span class="n">AutoMLRun</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span>
+        <span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">load_model_kwargs</span>
+    <span class="p">)</span>
 
     <span class="c1"># Get the model's framework:</span>
     <span class="n">framework</span> <span class="o">=</span> <span class="n">model_handler</span><span class="o">.</span><span class="n">FRAMEWORK_NAME</span>
@@ -335,6 +311,7 @@
 <div class="viewcode-block" id="optimize"><a class="viewcode-back" href="documentation.html#onnx_utils.onnx_utils.optimize">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">optimize</span><span class="p">(</span>
     <span class="n">context</span><span class="p">:</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">MLClientCtx</span><span class="p">,</span>
     <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">handler_init_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">optimizations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">fixed_point</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">optimized_model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -344,8 +321,9 @@
 
 <span class="sd">    :param context:              The MLRun function execution context.</span>
 <span class="sd">    :param model_path:           Path to the ONNX model object.</span>
+<span class="sd">    :param handler_init_kwargs:  Keyword arguments to pass to the `ONNXModelHandler` init method preloading.</span>
 <span class="sd">    :param optimizations:        List of possible optimizations. To see what optimizations are available, pass "help".</span>
-<span class="sd">                                 If None, all of the optimizations will be used. Defaulted to None.</span>
+<span class="sd">                                 If None, all the optimizations will be used. Defaulted to None.</span>
 <span class="sd">    :param fixed_point:          Optimize the weights using fixed point. Defaulted to False.</span>
 <span class="sd">    :param optimized_model_name: The name of the optimized model. If None, the original model will be overridden.</span>
 <span class="sd">                                 Defaulted to None.</span>
@@ -361,8 +339,9 @@
         <span class="k">return</span>
 
     <span class="c1"># Create the model handler:</span>
+    <span class="n">handler_init_kwargs</span> <span class="o">=</span> <span class="n">handler_init_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">model_handler</span> <span class="o">=</span> <span class="n">ONNXModelHandler</span><span class="p">(</span>
-        <span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span>
+        <span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">handler_init_kwargs</span>
     <span class="p">)</span>
 
     <span class="c1"># Load the ONNX model:</span>
