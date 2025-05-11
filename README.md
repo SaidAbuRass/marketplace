@@ -1,3 +1,4 @@
+### Change log [2025-04-27 14:05:00]
 1. Item Updated: `pyannote_audio` (from version: `1.2.0` to `1.2.0`)
 2. Item Updated: `pii_recognizer` (from version: `0.3.0` to `0.3.0`)
 3. Item Updated: `v2_model_tester` (from version: `1.1.0` to `1.1.0`)
