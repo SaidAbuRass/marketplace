@@ -1,1 +1,1 @@
-{"kind": ["serving", "nuclio:serving", "job"], "categories": ["utils", "model-serving", "deep-learning", "huggingface", "etl", "machine-learning", "model-testing", "data-generation", "NLP", "data-preparation", "pytorch", "genai", "monitoring", "model-training", "data-analysis", "audio"]}
+{"categories": ["data-analysis", "NLP", "genai", "monitoring", "utils", "model-serving", "data-generation", "data-preparation", "deep-learning", "model-testing", "audio", "machine-learning", "model-training"], "kind": ["job", "nuclio:serving", "serving"]}
