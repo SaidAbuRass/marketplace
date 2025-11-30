@@ -171,7 +171,7 @@ document.write(`
 <span class="s1">print("Wrote /opt/app/openai_proxy_app.py")</span>
 <span class="s1">PY</span>
 
-<span class="s1">exec gunicorn openai:app \</span>
+<span class="s1">exec gunicorn openai_proxy_app:app \</span>
 <span class="s1">  --chdir /opt/app \</span>
 <span class="s1">  --bind 0.0.0.0:8000 \</span>
 <span class="s1">  --worker-class uvicorn.workers.UvicornWorker \</span>
