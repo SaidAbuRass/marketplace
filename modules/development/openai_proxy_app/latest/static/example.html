@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>OpenAI Module Demo</title>
+<title>Using MLRun Hub Module for OpenAI Proxy App</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -147,51 +147,213 @@ document.write(`
   </button>
 `);
 </script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Toggle secondary sidebar">
+<span class="fa-solid fa-list"></span>
+</button>
 </div></div>
 </div>
 </div>
 </div>
 <div class="onlyprint" id="jb-print-docs-body">
-<h1>OpenAI Module Demo</h1>
+<h1>Using MLRun Hub Module for OpenAI Proxy App</h1>
 <!-- Table of contents -->
 <div id="print-main-content">
 <div id="jb-print-toc">
+<div>
+<h2> Contents </h2>
+</div>
+<nav aria-label="Page">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-the-openai-proxy-module-from-the-hub">Import the OpenAI proxy module from the Hub</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-openai-app-api-s">Examples of OpenAI app API’s</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chat-completions-api">Chat completions API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#go-over-the-openai-response">Go over the OpenAI response</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#embedding-with-the-deployed-openai-proxy">Embedding with the Deployed OpenAI Proxy</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Go over the OpenAI response</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#request-a-text-response-and-extract-the-output">Request a Text Response and Extract the Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Go over the OpenAI response</a></li>
+</ul>
+</li>
+</ul>
+</nav>
 </div>
 </div>
 </div>
 <div id="searchbox"></div>
 <article class="bd-article">
-<section id="openai-module-demo">
-<h1>OpenAI Module Demo<a class="headerlink" href="#openai-module-demo" title="Link to this heading">#</a></h1>
+<section id="using-mlrun-hub-module-for-openai-proxy-app">
+<h1>Using MLRun Hub Module for OpenAI Proxy App<a class="headerlink" href="#using-mlrun-hub-module-for-openai-proxy-app" title="Link to this heading">#</a></h1>
+<p>This notebook walks through the process of importing an OpenAI proxy application from an MLRun Hub module and deploying it as part of your MLRun project.</p>
+<p>The module provides a flexible FastAPI endpoint that exposes the following OpenAI URLs: chat completions, responses, and embeddings. So you can generate text, query models, and work with vector representations.</p>
+<p><strong>Note</strong> - Before running this notebook please generate an .env file with the following credentials</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OPENAI_BASE_URL</span><span class="o">=</span><span class="s2">".."</span>
+<span class="n">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">".."</span>
+
+<span class="c1"># optional:</span>
+<span class="n">OPENAI_DEFAULT_MODEL</span><span class="o">=</span><span class="s2">".."</span> <span class="c1"># by default uses gpt-4o-mini, it can changed by using this key</span>
+</pre></div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mlrun</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Load or create a project and set credentials.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">get_or_create_project</span><span class="p">(</span><span class="s2">"openai-module"</span><span class="p">,</span> <span class="n">user_project</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">set_secrets</span><span class="p">({</span>
+    <span class="s2">"OPENAI_BASE_URL"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_BASE_URL"</span><span class="p">],</span>
+    <span class="s2">"OPENAI_API_KEY"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_API_KEY"</span><span class="p">],</span>
+    <span class="s2">"OPENAI_DEFAULT_MODEL"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_DEFAULT_MODEL"</span><span class="p">]</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="import-the-openai-proxy-module-from-the-hub">
+<h2>Import the OpenAI proxy module from the Hub<a class="headerlink" href="#import-the-openai-proxy-module-from-the-hub" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">openai_module</span> <span class="o">=</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">"hub://openai_proxy_app"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">get_or_create_project</span><span class="p">(</span><span class="s2">"fastapi-openai"</span><span class="p">,</span><span class="n">user_project</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">context</span><span class="o">=</span><span class="s2">"./src"</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate the module with your MLRun project and deploy it </span>
+<span class="n">openai_obj</span> <span class="o">=</span> <span class="n">openai_module</span><span class="o">.</span><span class="n">OpenAIModule</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+<span class="n">openai_obj</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">deploy</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="examples-of-openai-app-api-s">
+<h2>Examples of OpenAI app API’s<a class="headerlink" href="#examples-of-openai-app-api-s" title="Link to this heading">#</a></h2>
+<section id="chat-completions-api">
+<h3>Chat completions API<a class="headerlink" href="#chat-completions-api" title="Link to this heading">#</a></h3>
+<p>This example asks for the three largest countries in Europe and their capitals and returns a standard chat completion response.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">"hub://openai"</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">openai_obj</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/v1/chat/completions"</span><span class="p">,</span>
+    <span class="n">body</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"model"</span><span class="p">:</span> <span class="s2">"gpt-4o-mini"</span><span class="p">,</span>
+        <span class="s2">"messages"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"What are the 3 largest countries in Europe and what are their capitals names"</span><span class="p">}],</span>
+    <span class="p">},</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="go-over-the-openai-response">
+<h3>Go over the OpenAI response<a class="headerlink" href="#go-over-the-openai-response" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">OpenAIModule</span><span class="o">.</span><span class="n">deploy</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"choices"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"message"</span><span class="p">][</span><span class="s2">"content"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The three largest countries in Europe by area are:
+
+1. **Russia** (part of it is in Europe) - Capital: Moscow
+2. **Ukraine** - Capital: Kyiv
+3. **France** - Capital: Paris
+
+Note that while Russia is the largest country in the world, only a portion of its landmass is in Europe.
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="embedding-with-the-deployed-openai-proxy">
+<h3>Embedding with the Deployed OpenAI Proxy<a class="headerlink" href="#embedding-with-the-deployed-openai-proxy" title="Link to this heading">#</a></h3>
+<p>This example sends a short sentence to the embeddings endpoint and extracts the returned vector from the response payload.<br/>
+The result is a numeric embedding you can use for similarity search, clustering, or downstream model features.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">openai_obj</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/v1/embeddings"</span><span class="p">,</span>
+    <span class="n">body</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"model"</span><span class="p">:</span> <span class="s2">"text-embedding-3-small"</span><span class="p">,</span>
+        <span class="s2">"input"</span><span class="p">:</span> <span class="s2">"Kubernetes whispers to its pods at night"</span>
+    <span class="p">},</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h3>Go over the OpenAI response<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">embedding</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"data"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"embedding"</span><span class="p">]</span>
+
+<span class="c1">#print if you want to see the embedding</span>
+<span class="c1">#print(embedding) </span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="request-a-text-response-and-extract-the-output">
+<h3>Request a Text Response and Extract the Output<a class="headerlink" href="#request-a-text-response-and-extract-the-output" title="Link to this heading">#</a></h3>
+<p>The proxy also supports the unified responses endpoint.<br/>
+Here we send a compact request for a short joke and then extract the generated text from the structured output.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">openai_obj</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/v1/responses"</span><span class="p">,</span>
+    <span class="n">body</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"model"</span><span class="p">:</span> <span class="s2">"gpt-4o-mini"</span><span class="p">,</span>
+        <span class="s2">"input"</span><span class="p">:</span> <span class="s2">"Give me a short joke about high tech workers"</span><span class="p">,</span>
+        <span class="s2">"max_output_tokens"</span><span class="p">:</span> <span class="mi">30</span>
+    <span class="p">},</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h3>Go over the OpenAI response<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"output"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"content"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"text"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Why did the high-tech worker bring a ladder to work?
+
+Because they wanted to reach new heights in their career!
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
 </section>
 </article>
 <footer class="prev-next-footer d-print-none">
@@ -199,6 +361,26 @@ document.write(`
 </div>
 </footer>
 </div>
+<div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage">
+<i class="fa-solid fa-list"></i> Contents
+  </div>
+<nav class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-the-openai-proxy-module-from-the-hub">Import the OpenAI proxy module from the Hub</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-openai-app-api-s">Examples of OpenAI app API’s</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chat-completions-api">Chat completions API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#go-over-the-openai-response">Go over the OpenAI response</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#embedding-with-the-deployed-openai-proxy">Embedding with the Deployed OpenAI Proxy</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Go over the OpenAI response</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#request-a-text-response-and-extract-the-output">Request a Text Response and Extract the Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Go over the OpenAI response</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</div></div>
 </div>
 <footer class="bd-footer-content">
 <div class="bd-footer-content__inner container">
