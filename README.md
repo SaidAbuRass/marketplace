@@ -1,8 +1,5 @@
+
 ### Change log [2025-11-30 15:38:34]
-1. Item Updated: `histogram_data_drift` (from version: `1.0.0` to `1.0.0`)
-2. Item Updated: `openai_proxy_app` (from version: `1.0.0` to `1.0.0`)
-3. Item Updated: `count_events` (from version: `1.0.0` to `1.0.0`)
-4. Item Updated: `evidently_iris` (from version: `1.0.0` to `1.0.0`)
 
 ### Change log [2025-11-30 15:38:26]
 1. Item Updated: `test_classifier` (from version: `1.1.0` to `1.1.0`)
