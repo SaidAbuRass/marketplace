@@ -209,10 +209,12 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">mlrun</span><span class="o">.</span><span class="n">get_or_create_project</span><span class="p">(</span><span class="s2">"openai-module"</span><span class="p">,</span> <span class="n">user_project</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+<span class="n">default_model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"OPENAI_DEFAULT_MODEL"</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">default_model</span><span class="p">:</span>
+    <span class="n">project</span><span class="o">.</span><span class="n">set_secrets</span><span class="p">({</span><span class="s2">"OPENAI_DEFAULT_MODEL"</span><span class="p">:</span><span class="n">default_model</span><span class="p">})</span>
 <span class="n">project</span><span class="o">.</span><span class="n">set_secrets</span><span class="p">({</span>
     <span class="s2">"OPENAI_BASE_URL"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_BASE_URL"</span><span class="p">],</span>
     <span class="s2">"OPENAI_API_KEY"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_API_KEY"</span><span class="p">],</span>
-    <span class="s2">"OPENAI_DEFAULT_MODEL"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_DEFAULT_MODEL"</span><span class="p">]</span>
 <span class="p">})</span>
 </pre></div>
 </div>

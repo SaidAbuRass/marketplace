@@ -184,10 +184,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">openai_proxy_app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">set_function</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"openai"</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="s2">"application"</span><span class="p">,</span><span class="n">image</span><span class="o">=</span><span class="s2">"python:3.11"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">with_requirements</span><span class="p">([</span>
-                <span class="s2">"fastapi&gt;=0.110,&lt;1.0"</span><span class="p">,</span>
-                <span class="s2">"uvicorn[standard]&gt;=0.29,&lt;1.0"</span><span class="p">,</span>
-                <span class="s2">"gunicorn&gt;=21.2,&lt;22.0"</span><span class="p">,</span>
-                <span class="s2">"requests&gt;=2.31,&lt;3.0"</span><span class="p">,</span>
+                <span class="s2">"fastapi==0.124.0"</span><span class="p">,</span>
+                <span class="s2">"uvicorn[standard]==0.38.0"</span><span class="p">,</span>
+                <span class="s2">"gunicorn==23.0.0"</span><span class="p">,</span>
+                <span class="s2">"requests=2.32.5"</span><span class="p">,</span>
             <span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">set_env</span><span class="p">(</span><span class="s2">"BASE64"</span><span class="p">,</span><span class="n">BASE64</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">openai_proxy_app</span><span class="o">.</span><span class="n">set_internal_application_port</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span>
