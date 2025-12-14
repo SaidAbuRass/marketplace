@@ -30,26 +30,21 @@
         <code class="yaml">
 apiVersion: v1
 categories:
-- genai
-description: OpenAI application runtime based on fastapi
-example: openai_proxy_app.ipynb
-generationDate: 2025-11-11:12-25
+- model-serving
+description: Helper for serving function deploy of an AI agents using MLRun
+example: agent_deployer.ipynb
+generationDate: 2025-12-07
 hidden: false
 labels:
   author: Iguazio
 mlrunVersion: 1.10.0
-name: openai_proxy_app
+name: agent_deployer
 spec:
-    filename: openai_proxy_app.py
+    filename: agent_deployer.py
     image: mlrun/mlrun
+    kind: monitoring_application
     requirements:
-      - fastapi==0.124.0
-      - uvicorn[standard]==0.38.0
-      - gunicorn==23.0.0
-      - requests==2.32.5
-    kind: generic
 version: 1.0.0
-
         </code>
     </pre>
 </body>
