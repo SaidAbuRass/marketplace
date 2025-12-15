@@ -1,6 +1,0 @@
-sklearn
-seaborn
-scikit-plot
-mlrun
-pandas
-lifelines
