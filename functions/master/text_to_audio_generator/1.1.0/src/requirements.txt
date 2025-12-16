@@ -1,2 +1,0 @@
-bark
-torchaudio>=2.1.0
