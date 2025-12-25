@@ -13,63 +13,38 @@
 # limitations under the License.
 #
 
-
-from mlrun.model_monitoring.applications import ModelMonitoringApplicationMetric
+from mlrun.model_monitoring.applications import (
+    ModelMonitoringApplicationBase, ModelMonitoringApplicationMetric,
+)
 import mlrun.model_monitoring.applications.context as mm_context
 
-from count_events import CountApp
 
-from unittest.mock import Mock
-from datetime import datetime
-import pandas as pd
-import pytest
+class CountApp(ModelMonitoringApplicationBase):
+    """
+    Model Monitoring Application that counts the number of events in the given time window.
+    """
+    def do_tracking(
+        self,
+        monitoring_context: mm_context.MonitoringApplicationContext
+    ) -> ModelMonitoringApplicationMetric:
+        """"
+        he do_tracking method implementation for the CountApp class.
+        It counts the number of events in the sample data-frame and logs the count.
 
-class TestCountApp:
-    """Test suite for CountApp class."""
-
-    def setup_method(self):
-        """Set up test fixtures before each test method."""
-        self.count_app = CountApp()
-    @staticmethod
-    def _create_mock_monitoring_context(sample_df, model_endpoint_name="test-model"):
-        """Helper method to create a mock monitoring context."""
-        mock_context = Mock(spec=mm_context.MonitoringApplicationContext)
-
-        # Mock the sample dataframe
-        mock_context.sample_df = sample_df
-
-        # Mock the logger
-        mock_logger = Mock()
-        mock_context.logger = mock_logger
-
-        # Mock the model endpoint
-        mock_model_endpoint = Mock()
-        mock_model_endpoint.metadata.name = model_endpoint_name
-        mock_context.model_endpoint = mock_model_endpoint
-
-        # Mock time attributes
-        mock_context.start_infer_time = datetime(2025, 1, 1, 10, 0, 0)
-        mock_context.end_infer_time = datetime(2025, 1, 1, 11, 0, 0)
-
-        return mock_context
-
-
-    @pytest.mark.parametrize("df_size", [0, 1, 10, 100, 1000])
-    def test_do_tracking_with_various_dataframe_sizes(self, df_size):
-        """Test do_tracking with various dataframe sizes using parametrized test."""
-        # Arrange
-        if df_size == 0:
-            test_df = pd.DataFrame()
-        else:
-            test_df = pd.DataFrame({"col1": range(df_size)})
-
-        mock_context = self._create_mock_monitoring_context(test_df)
-
-        # Act
-        result = self.count_app.do_tracking(mock_context)
-
-        # Assert
-        assert isinstance(result, ModelMonitoringApplicationMetric)
-        assert result.value == df_size
-        assert result.name == "count"
-
+        :param monitoring_context: The monitoring application context. It includes the current window data as a
+                                   pandas data-frame: monitoring_context.sample_df.
+        """
+        sample_df = monitoring_context.sample_df
+        monitoring_context.logger.debug("Sample data-frame", sample_df=sample_df)
+        count = len(sample_df)
+        monitoring_context.logger.info(
+            "Counted events for model endpoint window",
+            model_endpoint_name=monitoring_context.model_endpoint.metadata.name,
+            count=count,
+            start=monitoring_context.start_infer_time,
+            end=monitoring_context.end_infer_time,
+        )
+        return ModelMonitoringApplicationMetric(
+            name="count",
+            value=count,
+        )
